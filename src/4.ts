@@ -10,17 +10,59 @@
 
 // Після реалізації всіх класів створіть об'єкти для кожного класу та спробуйте відтворити сценарій, в якому людина приходить додому.
 
-// Наприклад, ось так:
 
+class Key {
+  private signature: number = Math.random();
+  getSignature() { return this.signature; }
+}
 
-const key = new Key();
+class Person {
+  private key: Key;
+  getKey() { return this.key }
+}
 
-const house = new MyHouse(key);
-const person = new Person(key);
+abstract class House {
+  door: boolean = false;
+  key: Key;
+  private tenants: Person[] = [];
 
-house.openDoor(person.getKey());
+  constructor(key: Key) {
+    this.key = key;
+  }
 
-house.comeIn(person);
+  comeIn(person: Person) {
+    if (this.door && person.getKey() && person.getKey().getSignature() === this.key.getSignature()) {
+      this.tenants.push(person);
+      console.log(`${person.getKey().getSignature()} ввійшов в будинок.`);
+    } else {
+      console.log("Вхід заборонено.");
+    }
+  }
 
+  abstract openDoor(key: Key): void;
+}
 
-export {};
+class MyHouse extends House {
+  openDoor(key: Key) {
+    if (key && key.getSignature() === this.key.getSignature()) {
+      this.door = true;
+      console.log("Двері відкриті.");
+    } else {
+      console.log("Не вдалося відкрити двері.");
+    }
+  }
+}
+
+// Приклад використання класів
+const myKey = new Key();
+const myHouse = new MyHouse(myKey);
+const person1 = new Person();
+const person2 = new Person();
+
+myHouse.openDoor(myKey); // Відкриваємо двері
+myHouse.comeIn(person1); // Вхід заборонено, бо ключі не співпадають
+myHouse.comeIn(person2); // Вхід заборонено, бо двері закриті
+
+const validPerson = new Person();
+myHouse.comeIn(validPerson); // Вхід дозволено, бо ключі співпадають
+export { };
