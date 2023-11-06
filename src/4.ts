@@ -13,25 +13,28 @@
 
 class Key {
   private signature: number = Math.random();
-  getSignature() { return this.signature; }
+  getSignature(): number { return this.signature; }
 }
+
 
 class Person {
-  private key: Key;
-  getKey() { return this.key }
+  constructor(private key: Key) { }
+
+  getKey(): Key { return this.key }
 }
 
+
 abstract class House {
-  door: boolean = false;
-  key: Key;
-  private tenants: Person[] = [];
+  protected door: boolean = false;
+  protected key: Key;
+  protected tenants: Person[] = [];
 
   constructor(key: Key) {
     this.key = key;
   }
 
   comeIn(person: Person) {
-    if (this.door && person.getKey() && person.getKey().getSignature() === this.key.getSignature()) {
+    if (this.door) {
       this.tenants.push(person);
       console.log(`${person.getKey().getSignature()} ввійшов в будинок.`);
     } else {
@@ -44,7 +47,7 @@ abstract class House {
 
 class MyHouse extends House {
   openDoor(key: Key) {
-    if (key && key.getSignature() === this.key.getSignature()) {
+    if (key.getSignature() === this.key.getSignature()) {
       this.door = true;
       console.log("Двері відкриті.");
     } else {
@@ -55,14 +58,12 @@ class MyHouse extends House {
 
 // Приклад використання класів
 const myKey = new Key();
+
 const myHouse = new MyHouse(myKey);
-const person1 = new Person();
-const person2 = new Person();
+const person = new Person(myKey);
 
-myHouse.openDoor(myKey); // Відкриваємо двері
-myHouse.comeIn(person1); // Вхід заборонено, бо ключі не співпадають
-myHouse.comeIn(person2); // Вхід заборонено, бо двері закриті
+myHouse.openDoor(person.getKey());
 
-const validPerson = new Person();
-myHouse.comeIn(validPerson); // Вхід дозволено, бо ключі співпадають
+myHouse.comeIn(person);
+
 export { };
